@@ -3,41 +3,45 @@ startBtn.addEventListener("mouseover", start);
 
 function start() {
   //   windows.location.reload();
-  var walls = document.querySelectorAll(".boundary");
-  preventTouchingWalls(walls);
-  preventCheating();
+  manageTouchingWalls(false);
+  manageCheating(false);
   reachEnd();
 }
-function preventTouchingWalls(walls) {
-  for (var i = 0; i < walls.length; i++) {
-    walls[i].addEventListener("mouseover", function () {
-      turnWallsRed(walls);
-    });
+function manageTouchingWalls(allow) {
+  var walls = document.querySelectorAll(".boundary");
+  if (allow) {
+    for (var i = 0; i < walls.length; i++) {
+      walls[i].removeEventListener("mouseover", turnWallsRed);
+    }
+  } else {
+    for (var i = 0; i < walls.length; i++) {
+      walls[i].addEventListener("mouseover", turnWallsRed);
+    }
   }
 }
 
-function preventCheating() {
+function manageCheating(allow) {
   var game_canvas = document.getElementById("game");
-  game_canvas.addEventListener("mouseleave", turnWallsRed);
+  if (allow) {
+    game_canvas.removeEventListener("mouseleave", turnWallsRed);
+  } else {
+    game_canvas.addEventListener("mouseleave", turnWallsRed);
+  }
 }
-function turnWallsRed(walls) {
+function turnWallsRed() {
   var walls = document.querySelectorAll(".boundary");
   for (var i = 0; i < walls.length; i++) {
     walls[i].classList.add("highlighted");
   }
   changeStatus(false);
 }
-function removeCheatingRestriction(walls) {
-  var game_canvas = document.getElementById("game");
-
-  game_canvas.removeEventListener("mouseleave", turnWallsRed);
-}
 
 function reachEnd() {
   var end = document.getElementById("end");
   end.addEventListener("mouseover", function () {
     changeStatus(true);
-    removeCheatingRestriction();
+    manageCheating(true);
+    manageTouchingWalls(true);
   });
 }
 
